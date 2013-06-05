@@ -1,0 +1,22 @@
+fieldset.form-container,
+fieldset.form-container fieldset{border:1px solid #E6EBFF;padding:10px;text-align:left;}
+fieldset.form-container li {list-style:none;padding:1px;clear:left;}
+fieldset.form-container li label{width:154px;padding-right:10px;text-align:right;float:left;display:block;}
+fieldset.form-container li li label{width:160px;}
+fieldset.form-container textarea{width:250px;height:150px;}
+fieldset.form-container input.us-phone{width:30px;}
+fieldset.form-container legend{border:1px solid #E6EBFF;color:#E6EBFF;padding:.25em;margin-left:.5em;margin-bottom:1em;}
+.form-required{color:#AA0000;}
+p.hint{font-size:80%;font-style:italic;width:184px;text-align:right;}
+textarea:focus,
+input:focus{background-color:#E6EBFF;border:2px solid #FFE16B;}
+.errors, .errors ul {color:#AA0000;font-style:italic;font-weight:normal;margin:0px;margin-left:158px;padding-left:5px;}
+.errors legend{}
+.total-errors, .total-errors legend{color:#AA0000;background-color:#FFE16B;border:1px solid #AA0000}
+.total-errors{padding:5px;}
+.total-errors, .total-errors ul{margin:0px;margin-bottom:5px;}
+.errors li {list-style:none;}
+.button-wrapper{padding-left:193px;}
+fieldset.form-container li div.checkbox-group-wrapper{float:left;}
+fieldset.form-container li div.checkbox-group-wrapper label{float:none;width:auto;display:inline;}
+fieldset.form-container li div.checkbox-group-wrapper input{margin-right:5px;}

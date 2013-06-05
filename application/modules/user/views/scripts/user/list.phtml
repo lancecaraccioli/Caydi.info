@@ -1,0 +1,27 @@
+<? $this->placeholder('title')->set('Users'); ?>
+
+
+    <h2><?= $this->placeholder('title') ?></h2>
+    <a href="<?= $this->url(array('module'=>'user', 'controller'=>'user', 'action' => 'create'), null, true) ?>">Add user</a>
+    <table>
+		<tr>
+			<th><a href="<?= $this->url(array('orderby'=>'u.first_name')); ?>">First Name</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'u.last_name')); ?>">Last Name</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'u.email')); ?>">Email</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'u.is_admin')); ?>">Is Administrator?</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'u.created')); ?>">Creation Date</a></th>
+			<th>(options)</th>
+
+		</tr>
+    <? foreach($this->users as $user): ?>
+	    <tr>
+	        <td><?= $user->first_name ?></td>
+	        <td><?= $user->last_name ?></td>
+	        <td><?= $user->email ?></td>
+	        <td><?= $user->is_admin?'Yes':'No'; ?></td>
+	        <td><?= date('M d, Y',strtotime($user->created)); ?></td>
+	        <td><a href="<?= $this->url(array('module'=>'user', 'controller'=>'user', 'action' => 'edit', 'id' => $user->id), null, true) ?>">Edit</a> | <a href="<?= $this->url(array('module'=>'user', 'controller'=>'user', 'action' => 'delete', 'id' => $user->id), null, true) ?>">Remove</a></td>
+	    </tr>
+    <? endforeach ?>
+    </table>
+

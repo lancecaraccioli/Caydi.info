@@ -1,0 +1,89 @@
+<? $this->headLink()->appendStylesheet('/css/uploadify.css');?>
+<? $this->headScript()->appendFile('/js/jquery.uploadify.js');?>
+
+<? if ($this->media->id):?>
+	<? $this->headScript()->captureStart();?>
+		sessionID='<?=session_id();?>';
+		mediaID='<?=$this->media->id?>';
+		$(document).ready(function(){
+			$("#fileUploader").fileUpload({
+				'uploader': '/swf/uploader.swf',
+				'cancelImg': '/img/button/cancel.png',
+				'buttonImg': '/img/button/browse.gif',
+				'script': "<?=$this->url(array('action'=>'attach-media-from-upload','controller'=>'media-upload','format'=>'json'));?>",
+				'scriptData': {'s_ID':sessionID, 'media_id':mediaID},
+				'displayData': 'speed',
+				'wmode':'transparent',
+				'width':'75px',
+				'onError':errorHandler,
+				'onComplete':completeHandler,
+				'onSelectOnce':selectHandler,
+				'fileExt':'*.jpg;*.gif;*.png;*.pdf;*.flv;*.wmv;*.mp3;*.doc'
+			});
+		});
+		
+		function selectHandler(event,data){
+			$('#uploadMediaButton').unbind('click');
+			$('#uploadMediaButton').click(function(){
+				$(event.target).fileUploadStart();
+			});
+		}
+		function errorHandler(event, queueID, fileObj, errorObj){
+		    console.debug(arguments);
+		}
+		function completeHandler(event,queueID, fileObj, response, data){
+		    //the response should contain information about the new state of the media (new thumbnail and media files)
+		    try{
+        	    responseData = eval('('+response+')');
+                //show/hide appropriate sections
+		        $('.current-media').show();
+                $('.creation-instructions').hide();               
+		        //change the source of the thumbnail image to the one retured in the response
+		        $('.current-media img.thumbnail').slideUp().attr('src', responseData.thumbnail).slideDown();
+		        //change the href of the a tag that links to the media file
+		        $('.current-media .media-link').attr('href', responseData.media).html(responseData.mediaName);
+        	} catch(e){
+        	    alert("TODO: add notification system... this error occured because the reponse from the server was not a valid JSON format.  However it's highly likely that what you were trying to do actually worked.  Refresh the page to see.");
+        	}
+		}
+	<? $this->headScript()->captureEnd();?>
+<?endif;?>
+<?$this->headStyle()->captureStart();?>
+    div.thumbnail{display:block;float:left;}
+<?$this->headStyle()->captureEnd();?>
+<h2><?= $this->media->Album->name ?> - Media Input Form</h2>
+<a href="/media-gallery/media-admin/list/media_album_id/<?=$this->media->Album->id ?>">Return to List</a><br />
+<br />
+<fieldset class="form-container">
+	<legend>Current Media</legend>
+    <? if (!$this->media->id || !$this->media->media_file):?>
+        <?$mediaExists = false;?>
+    <?else:?>
+        <?$mediaExists = true;?>
+	<?endif;?>
+	<ul class="current-media<?if (!$mediaExists):?> hidden<?endif;?>">
+		<li><label class="optional" >Thumbnail:</label><div class="thumbnail"><img class="thumbnail" src="<?=$this->media->thumbnail_file;?>"/></div></li>
+		<li><label class="optional" >Media File:</label>&nbsp;&nbsp;(original name)&nbsp;<a target="_blank" class="media-link" href="<?=$this->media->media_file;?>"><?=$this->media->orig_file_name;?></a></li>
+	</ul>
+	
+	<div class="creation-instructions<?if ($mediaExists):?> hidden<?endif;?>">
+		<strong>Creating a new media record is a two step process.</strong><br />
+		<ol>
+			<li style="list-style-type:decimal;<?if (!$this->media->id) echo "color:#E86C31;";?>">Please add the required information below and save your record.  You will be returned to the form and a media uploader will be made available for you to upload your associated media files.</li>
+			<li style="list-style-type:decimal;<?if (!$this->media->media_file) echo "color:#E86C31;";?>">Select the files you would like to upload and then click the save button.</li>
+		</ol>
+	</div>
+</fieldset>
+<fieldset class="form-container">
+<legend>Media File Uploader</legend>
+	<?if($this->media->id):?>
+		<div id="fileUploader"></div>
+		<button id="uploadMediaButton">Upload This File</button>
+	<?else:?>
+		<p>Once your media record is created you may return here to upload a media file.</p>
+	<?endif;?>
+</fieldset>
+<fieldset class="form-container">
+<legend>Media Information</legend>
+<?=$this->form; ?>
+</fieldset>

@@ -1,0 +1,63 @@
+<?php
+class LessonForm extends Zend_Form
+{
+	public function init() {
+		$this->setAttrib('enctype', 'multipart/form-data');
+		$this->setMethod('post');
+		$this->addElement('hidden','id');
+        $lessonCategorys=Doctrine::getTable('LessonCategory')->findAll();
+        $lessonCategoryOptions=array(''=>"choose a category");
+        foreach($lessonCategorys as $key=>$lessonCategory){
+            $lessonCategoryOptions[$lessonCategory->id]=$lessonCategory->name;
+        }
+		$this->addElement('select','lesson_category_id')
+            ->getElement('lesson_category_id')
+            ->addMultiOptions($lessonCategoryOptions)
+            ->setIsArray(false)
+            ->setValue('')
+            ->setRequired(true)
+            ->setLabel('Lesson Category:');
+		$this->addElement('text','title',array('label' => 'Title:','required' => true));
+		$publish_date = new Custom_Form_Element_Date('publish_date',array('label' => 'Date:','required' => true));
+		$this->addElement($publish_date);
+		$this->addElement('textarea','summary',array('label' => 'Summary:','required' => false));
+        $element = new Zend_Form_Element_File('pdf');
+		$element->setLabel('Upload New Pdf:')
+		        ->setDestination(USER_MEDIA_PATH.'pdf/lessons')
+		        ->addValidator('Count', false, 1)     // ensure only 1 file
+		        ->addValidator('Size', false, 1638400) // limit to 1.5M
+		        ->addValidator('Extension', false, 'pdf'); // only pdf files allowed
+		$this->addElement($element);
+		
+		$current_pdf = new Custom_Form_Element_Link('pdf_url');
+		$current_pdf->setLabel('Current Pdf:')
+					->setLinkText('Click here to view.')
+					->setTarget('_blank');
+		$this->addElement($current_pdf);
+		
+        $this->addElement('submit','submit',array('label' => 'Send'));
+        //view logic (place in view script?)
+        $this->setDisableLoadDefaultDecorators(true);
+		$this->addDecorator('FormElements')
+			 ->addDecorator('HtmlTag', array('tag' => 'ul')) //this adds a <ul> inside the <form>
+			 ->addDecorator('Form');
+		$this->setElementDecorators(array(
+			'ViewHelper',
+			array('Label',array('requiredSuffix' => '<span class="form-required">*</span>', 'escape' => false)),
+			'Errors',
+			new Zend_Form_Decorator_HtmlTag(array('tag' => 'li')) //wrap elements in <li>'s
+		));
+        $this->submit->removeDecorator('HtmlTag');
+        $this->submit->addDecorator(array('div'=>'HtmlTag'), array('tag'=>'div', 'class'=>'button-wrapper'));
+        $this->submit->addDecorator(array('li'=>'HtmlTag'), array('tag'=>'li'));
+		$this->submit->removeDecorator('Label');
+ 
+		//Set decorators for the displaygroup:
+		$this->setDisplayGroupDecorators(array(
+			'FormElements',
+			array(array('ul'=>'HtmlTag'),array('tag'=>'ul')),
+			'Fieldset',
+			array(array('li'=>'HtmlTag'),array('tag'=>'li')),
+		));
+	}
+}

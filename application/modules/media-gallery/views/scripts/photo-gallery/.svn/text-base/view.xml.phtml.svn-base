@@ -1,0 +1,1 @@
+<?=$this->partial('photo-gallery/partial/album-list.phtml', array('mediaAlbum'=>$this->mediaAlbum, 'paginator'=>$this->paginator));

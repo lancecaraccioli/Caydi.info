@@ -1,0 +1,26 @@
+<? $this->placeholder('title')->set('Contact Request Submissions'); ?>
+
+
+    <h2><?= $this->placeholder('title') ?></h2>
+    <table>
+		<tr>
+			<th><a href="<?= $this->url(array('orderby'=>'first_name')); ?>">First Name</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'last_name')); ?>">Last Name</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'email')); ?>">Email</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'phone')); ?>">Phone</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'created')); ?>">Creation Date</a></th>
+			<th>(options)</th>
+
+		</tr>
+    <? foreach($this->contactRequests as $contactRequest): ?>
+	    <tr>
+	        <td><?= $contactRequest->first_name; ?></td>
+	        <td><?= $contactRequest->last_name; ?></td>
+	        <td><?= $contactRequest->email; ?></td>
+	        <td><?= $contactRequest->phone; ?></td>
+	        <td><?= date('M d, Y',strtotime($contactRequest->created)); ?></td>
+	        <td><a href="<?= $this->url(array('module'=>'contact', 'controller'=>'admin', 'action' => 'delete', 'id' => $contactRequest->id), null, true) ?>">Remove</a></td>
+	    </tr>
+    <? endforeach ?>
+    </table>
+

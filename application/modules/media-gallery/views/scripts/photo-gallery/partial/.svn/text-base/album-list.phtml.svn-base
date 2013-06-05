@@ -1,0 +1,11 @@
+<h2><?=$this->mediaAlbum->name;?></h2>
+<ul class="mediaAlbum-<?=$this->mediaAlbum->id;?> mediaAlbum-ul wrap-floats">
+<? foreach ($this->paginator as $photo):?>
+	<li class="mediaAlbum-li">
+		<span class="photoContainer">
+			<a class="photoLink" href="<?=$photo->media_file;?>" rel="lightbox-album-<?=$this->mediaAlbum->id;?>"><img alt="<?=$photo->name;?>" class="photo" src="/images/default/photo-album/thumbnail-image-mask.gif" style="background-image:url(<?=$photo->thumbnail_file;?>);"/></a>
+		</span>
+	</li>
+<?endforeach;?>
+</ul>
+<?= $this->paginationControl($this->paginator, 'Sliding', '_partial/paginationPartial.phtml'); ?>

@@ -1,0 +1,37 @@
+<?php
+class FaqCategoryForm extends Zend_Form
+{
+	
+	public function init() {
+		$this->setAttrib('enctype', 'multipart/form-data');
+		$this->setDisableLoadDefaultDecorators(true);
+		$this->setMethod('post');
+		$this->addElement('hidden','id');
+		$this->addElement('text','name',array('label' => 'Category Name:','required' => true));
+		$this->addElement('submit','submit',array('label' => 'Send'));
+        
+        //the below view logic seems missplaced... are there static Zend_Form methods for setting a default?  If so couldn't this be part of the config process?
+        //should I extend the Zend_Form to create a custom default form that all ofother forms would extend containing the view logic below?
+		$this->addDecorator('FormElements')
+			 ->addDecorator('HtmlTag', array('tag' => 'ul')) //this adds a <ul> inside the <form>
+			 ->addDecorator('Form');
+		$this->setElementDecorators(array(
+			'ViewHelper',
+			array('Label',array('requiredSuffix' => '<span class="form-required">*</span>', 'escape' => false)),
+			'Errors',
+			new Zend_Form_Decorator_HtmlTag(array('tag' => 'li')) //wrap elements in <li>'s
+		));
+        $this->submit->removeDecorator('HtmlTag');
+        $this->submit->addDecorator(array('div'=>'HtmlTag'), array('tag'=>'div', 'class'=>'button-wrapper'));
+        $this->submit->addDecorator(array('li'=>'HtmlTag'), array('tag'=>'li'));
+		$this->submit->removeDecorator('Label');
+ 
+		//Set decorators for the displaygroup:
+		$this->setDisplayGroupDecorators(array(
+			'FormElements',
+			array(array('ul'=>'HtmlTag'),array('tag'=>'ul')),
+			'Fieldset',
+			array(array('li'=>'HtmlTag'),array('tag'=>'li')),
+		));
+	}
+}

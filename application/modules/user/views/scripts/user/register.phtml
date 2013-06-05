@@ -1,0 +1,11 @@
+<? $this->placeholder('title')->set('User Registration'); ?>
+<div id="login-form-wrapper">
+	<? if (isset($this->identity)):?>
+		<p>Registration is complete you are currently signed in as <?= $this->identity; ?></p>
+		<p><a href="<?= $this->url(array('action'=>'logout')); ?>">Logout</a> | <a href="<?= $this->url(array('module'=>'default'), null, true); ?>">Go Home</a></p>
+	<? else: ?>
+		<?= $this->form ?>
+		<p><a href="<?= $this->url(array('action'=>'login')); ?>">Login to an existing account</a></p>
+	<? endif; ?>
+</div>
+

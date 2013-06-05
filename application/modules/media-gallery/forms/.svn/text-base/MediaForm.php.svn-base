@@ -1,0 +1,72 @@
+<?php
+class MediaForm extends Zend_Form
+{
+	public function init() {
+		$this->setAttrib('enctype', 'multipart/form-data');
+		$this->setMethod('post');
+		$this->addElement('hidden','id');
+        $mediaAlbums=Doctrine::getTable('MediaAlbum')->findAll();
+        $mediaAlbumOptions=array(''=>"choose an album");
+        foreach($mediaAlbums as $key=>$mediaAlbum){
+            $mediaAlbumOptions[$mediaAlbum->id]=$mediaAlbum->name;
+        }
+		$this->addElement('select','media_album_id')
+            ->getElement('media_album_id')
+            ->addMultiOptions($mediaAlbumOptions)
+            ->setIsArray(false)
+            ->setValue('')
+            ->setRequired(true)
+            ->setLabel('Media Album:');
+		$this->addElement('text','name',array('label' => 'Media Name','required' => true));
+		//$this->addElement('textarea','caption',array('label' => 'Caption','required' => true));
+		//media file
+        /*$element = new Zend_Form_Element_File('media');
+		$element->setLabel('Media file (jpg or flv):')
+		        ->setDestination(USER_MEDIA_PATH.'media/media')
+		        ->addValidator('Count', false, 1)     // ensure only 1 file
+		        ->addValidator('Size', false, 3000000) // limit to 1.5M
+		        ->addValidator('Extension', false, 'flv,jpg'); // only JPEG, Flash Video, or Mp3's allowed
+		$this->addElement($element);*/
+		$this->addElement('hidden','temp_media');//this is used by the flash uploader to tell the controller which temporary file to use for the media file
+		//custom thumbnail
+        $element = new Zend_Form_Element_File('thumbnail');
+		$element->setLabel('Custom thumbnail (jpg):')
+			->setDescription('If you would like a custom thumbnail to be used for listings of this media file please upload it here.  Otherwise a thumbnail will be generated for you when you upload a media file.')
+		    ->setDestination(USER_MEDIA_PATH.'media/thumbnail')
+		    ->addValidator('Count', false, 1)     // ensure only 1 file
+		    ->addValidator('Size', false, 3000000) // limit to 3M
+		    ->addValidator('Extension', false, 'png,gif,jpg'); // only JPEG, PNG, GIFs, Flash Video, or Mp3's allowed
+		$this->addElement($element);
+		$this->addElement('hidden','temp_thumbnail');//this is used by the flash uploader to tell the controller which temporary file to use for the media file
+
+        $this->addElement('submit','submit',array('label' => 'Send'));
+        //view logic (place in view script?)
+        $this->setDisableLoadDefaultDecorators(true);
+		$this->addDecorator('FormElements')
+			 ->addDecorator('HtmlTag', array('tag' => 'ul')) //this adds a <ul> inside the <form>
+			 ->addDecorator('Form');
+		$this->setElementDecorators(array(
+			'ViewHelper',
+			array('Label',array('requiredSuffix' => '<span class="form-required">*</span>', 'escape' => false)),
+			'Errors',
+			'Description',
+			new Zend_Form_Decorator_HtmlTag(array('tag' => 'li')) //wrap elements in <li>'s
+		));
+		//$this->thumbnail->removeDecorator('HtmlTag');
+		//$this->thumbnail->addDecorator('Description');
+		//$this->thumbnail->addDecorator(new Zend_Form_Decorator_HtmlTag(array('tag' => 'li')));
+		
+        $this->submit->removeDecorator('HtmlTag');
+        $this->submit->addDecorator(array('div'=>'HtmlTag'), array('tag'=>'div', 'class'=>'button-wrapper'));
+        $this->submit->addDecorator(array('li'=>'HtmlTag'), array('tag'=>'li'));
+		$this->submit->removeDecorator('Label');
+ 
+		//Set decorators for the displaygroup:
+		$this->setDisplayGroupDecorators(array(
+			'FormElements',
+			array(array('ul'=>'HtmlTag'),array('tag'=>'ul')),
+			'Fieldset',
+			array(array('li'=>'HtmlTag'),array('tag'=>'li')),
+		));
+	}
+}

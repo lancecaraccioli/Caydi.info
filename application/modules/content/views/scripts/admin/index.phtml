@@ -1,0 +1,20 @@
+<? $this->placeholder('title')->set('All Content Pages'); ?>
+
+    <h2><?= $this->placeholder('title') ?></h2>
+    <a href="/content/content/create">Create a new Content Page</a>
+    <table>
+		<tr>
+			<th><a href="<?= $this->url(array('orderby'=>'c.title')); ?>">Title</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'c.created')); ?>">Creation Date</a></th>
+			<th>(options)</th>
+
+		</tr>
+    <? foreach($this->contentPages as $contentPage): ?>
+	    <tr>
+	        <td><?= $contentPage->title ?></td>
+	        <td><?= $contentPage->created ?></td>
+	        <td><a href="<?= $this->url(array('action' => 'edit', 'id' => $contentPage->id)) ?>">Edit</a> | <a href="<?= $this->url(array('action' => 'delete', 'id' => $contentPage->id)) ?>">Remove</a></td>
+	    </tr>
+    <? endforeach ?>
+    </table>
+

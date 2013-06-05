@@ -1,0 +1,90 @@
+<?php
+
+class SiteMapForm extends Zend_Form
+{
+    public function init()
+    {
+    	$config=Zend_Registry::get('configuration');
+        // set the method for the display form to POST
+        $this->setMethod('post')->setAttrib('enctype', 'multipart/form-data');
+
+        $SiteMapForm = new Zend_Form_SubForm();
+
+        $SiteMapForm->addElement('hidden', 'id', array(
+            'label'      => '',
+            'required'   => false,
+            'filters'    => array('StringTrim'),
+            'validators' => array(
+                'NotEmpty',
+            )
+        ));
+	
+        $SiteMapForm->addElement('text', 'title', array(
+            'label'      => 'Title:',
+            'required'   => true,
+            'filters'    => array('StringTrim'),
+            'validators' => array(
+                'NotEmpty',
+            )
+        ));
+        
+        $SiteMapForm->addElement('select', 'theme');
+        $SiteMapForm->theme
+        	->setLabel('Theme:')
+        	->setRequired(false)
+	        ->setMultiOptions(array(
+	        	''=>'choose...',
+				'general'=>'General (eg. Home)',
+				'kids'=>'Kids',
+				'parents'=>'Parents',
+				'volunteers'=>'Volunteers',
+	        ));
+
+
+		$parents = array();
+		$treeObject = Doctrine::getTable('SiteMap')->getTree();
+		$tree = $treeObject->fetchTree();
+		foreach ($tree as $node) {
+			$parents[$node['id']] = str_repeat('--', $node['level']) . $node['title'];
+		}
+	
+		$SiteMapForm->addElement('select', 'parent_node_id', array(
+			'label' => 'Parent',
+			'required' => false,
+			'filters' => array(),
+			'validators' => array(),
+			'multioptions' => $parents
+		));
+		
+		$SiteMapForm->addElement('select', 'sym_link_id', array(
+			'label' => 'Sym Link (Only select this if you want this page to redirect to another page in the site map.',
+			'required' => false,
+			'filters' => array(),
+			'validators' => array(),
+			'multioptions' => array(0=>'[Do Not Link To Another Node]')+$parents
+		));	
+		$routes = SiteMap::autoDiscoverAppRoutes();
+		$SiteMapForm->addElement('select', 'route', array(
+			'label' => 'Select the application route that this node will direct to.',
+			'required' => true,
+			'filters' => array(),
+			'validators' => array(),
+			'multioptions' => array(''=>'choose...')+$routes['default']
+		));
+		
+                
+		$SiteMapForm->addElement('checkbox', 'display_in_navigation');
+		$SiteMapForm->display_in_navigation
+			->setLabel('Display this node in the navigation?')
+			->setCheckedValue('1')
+			->setUncheckedValue('0');
+		        
+		
+        $this->addSubForm($SiteMapForm, 'SiteMap');
+
+        // add the submit button
+        $this->addElement('submit', 'save', array(
+            'label'    => 'Save',
+        ));
+    }
+}

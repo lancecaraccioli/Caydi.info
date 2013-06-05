@@ -1,0 +1,52 @@
+<?php
+class FamilyDevotionIdeaForm extends Zend_Form
+{
+	public function init() {
+
+        $id = new Zend_Form_Element_Hidden('id');
+        $title	        = new Zend_Form_Element_Text('title');
+        $author	        = new Zend_Form_Element_Text('author');
+        $date	        = new Custom_Form_Element_Date('date');
+    	$description	= new Zend_Form_Element_Textarea('description');
+    	$is_published	= new Zend_Form_Element_Checkbox('is_published');
+        $submit         = new Zend_Form_Element_Submit('submit');
+        
+       
+        $title->setLabel('Title')
+            ->addValidator(new Zend_Validate_Alnum(true))
+            ->setDescription('Family Devotion Idea Title.')
+            ->setRequired(true);
+            
+        $author->setLabel('Author')
+            ->addValidator(new Zend_Validate_Alnum(true))
+            ->setDescription('Family Devotion Author If Applicable.')
+            ->setRequired(false);
+
+        $date ->setLabel('Date');
+
+        $description->setLabel('Description')
+                    ->setDescription('Description of Family Devotion Idea.')
+                    ->setRequired(true);
+                    
+		$is_published
+			->setLabel('Publish this Daily Devotional?')
+			->setCheckedValue('1')
+			->setUncheckedValue('0')
+			->setChecked(true);
+		
+                    
+        $submit->setLabel('Save')
+                ->setDescription('Click here to save your changes.');
+
+		$this->setAttrib('enctype', 'multipart/form-data');
+        $this->addElements(array(
+        	$id,
+        	$title,
+        	$author,
+        	$date,
+        	$description,
+        	$is_published,
+            $submit,
+        ));
+	}
+}

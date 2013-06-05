@@ -1,0 +1,15 @@
+<? $this->headLink()->appendStylesheet('/css/forms.css');?>
+
+<? $this->placeholder('title')->set('User Login'); ?>
+<div id="login-form-wrapper">
+	<h2><?= $this->placeholder('title'); ?></h2>
+	<? if (isset($this->identity)):?>
+		<p>You are currently signed in as <?= $this->identity; ?></p>
+		<p><a href="<?= $this->url(array('action'=>'logout')); ?>">Logout</a></p>
+		<p><a href="<?= $this->url(array('module'=>'admin'), null, true); ?>">Goto Admin</a></p>
+	<? else: ?>
+		<?= $this->form ?>
+		<?/*<p><a href="<?= $this->url(array('action'=>'register')); ?>">Register as a new user.</a></p> */?>
+	<? endif; ?>
+</div>
+

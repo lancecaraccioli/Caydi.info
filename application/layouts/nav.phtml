@@ -1,0 +1,16 @@
+<?$this->acl=$this->acl?$this->acl:new Site_Acl;?>
+<?$this->headScript()->captureStart();?>
+    $(document).ready(function(){
+        $('.navigation a.<?=$this->currentPage?>').addClass('current').parent().addClass('current');
+    });    
+<?$this->headScript()->captureEnd();?>
+<ul class="navigation">
+    <li><a class="home" href="/content/display/show/slug/home">Home</a></li>
+    <li><a class="about-me" href="/content/display/show/slug/about-me">About Me</a></li>
+    <li><a class="media-gallery-photo-gallery" href="/media-gallery/photo-gallery">Gallery</a></li>
+    <li><a class="photo-collages-collage" href="/photo-collages/">Collages</a></li>
+    <li><a class="contact-request" href="/contact/request">Contact Me</a></li>
+    <?if (Zend_Registry::getInstance()->get('acl')->isAllowed(Zend_Auth::getInstance()->getIdentity(),'restricted')):?>
+    <li><a class="admin-console" href="/admin/console">Admin</a></li>
+    <?endif;?>
+</ul>

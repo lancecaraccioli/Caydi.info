@@ -1,0 +1,5 @@
+.png{ behavior: url(/css/ie_pngfix_2/iepngfix.php) }
+
+a.png{
+	cursor:pointer;
+}

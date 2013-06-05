@@ -1,0 +1,47 @@
+<?php
+class RegionForm extends Zend_Form
+{
+	public function init() {
+
+        $id = new Zend_Form_Element_Hidden('id');
+        $name	        = new Zend_Form_Element_Text('name');
+    	$image			= new Zend_Form_Element_File('image');
+    	$current_image  = new Custom_Form_Element_RawHtml('current_image');
+    	$description	= new Zend_Form_Element_Textarea('description');
+        $regionSelect   = new Zend_Form_Element_Select('region_id');
+        $submit         = new Zend_Form_Element_Submit('submit');
+
+        $name	->setLabel('Name')
+                ->addValidator(new Zend_Validate_Alnum(true))
+                ->setDescription('Museum Name.')
+                ->setRequired(true);
+                
+        $image->setLabel('Upload an Image')
+			->addValidator('Extension', false, 'jpg,png,gif')
+	        ->addValidator('Size', false, 1638400)
+	        ->addValidator('Count', false, 1)
+            ->setDestination(USER_MEDIA_PATH. 'regions/original')
+            ->setDescription('Image associated with this region.')
+            ->setRequired(false);
+            
+    	$current_image->setLabel('Current Image:');
+
+
+        $description->setLabel('Description')
+                    ->setDescription('Description of Museum.')
+                    ->setRequired(true);
+                    
+        $submit->setLabel('Save')
+                ->setDescription('Click here to save your changes.');
+                
+		$this->setAttrib('enctype', 'multipart/form-data');
+        $this->addElements(array(
+        	$id,
+        	$name,
+        	$image,
+        	$current_image,
+        	$description,
+            $submit,
+        ));
+	}
+}

@@ -1,0 +1,13 @@
+<? $this->headScript()->appendFile("/javascript/jquery.FCKEditor.js");?>
+<? $this->headScript()->captureStart(); ?>
+    $(function(){
+        $.fck.config={ path:'/fckeditor/', width: 800, height: 600, Config: { CustomConfigurationsPath: '/fckeditor/custom_config.js' }};
+    	$("textarea[name='Content[content]']").fck({toolbar: 'custom_toolbar'});
+        $.fck.update(); // update value in textareas of each FCK editor instance
+    });
+<? $this->headScript()->captureEnd(); ?>
+
+    <h2><?= $this->placeholder('title');?><?if (!empty($this->Content->title)):?> - "<?=$this->Content->title;?>"<?endif;?></h2>
+    <a href="/content/content/list">Return To List</a>
+    <?= $this->form ?>
+

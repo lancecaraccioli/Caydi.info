@@ -1,0 +1,34 @@
+<h2><?php echo $this->media_album->name ?> - Media</h2>
+<a href="/media-gallery/album-admin/list">Back to Media Albums</a> | <a href="/media-gallery/media-admin/create/media_album_id/<? echo $this->media_album->id ?>">Add Another Media</a> | <a href="/media-gallery/album-admin/edit/id/<?=($this->media_album->id); ?>">Edit Album (<?=$this->media_album->name?>)</a><br />
+<br />
+<fieldset>
+    <legend>Media Listing</legend>
+    <table align="center">
+    	<tr>
+    		<th>Thumbnail</th>
+    		<th>Name</th>
+    		<th>Type</th>
+    		<th>Last Updated</th>
+    		<th colspan="2">Actions</th>
+    	</tr>
+    	<?php
+        if ($this->media_album->Media->count()):
+    		$i=0;
+    		$classes=array('dark','light');
+    		foreach ($this->media_album->Media as $media):
+    	?>
+    	<tr class="<?php echo($classes[$i%2]);?>">
+    		<td><img src="<?php echo($media->thumbnail_file); ?>"/></td>
+    		<td><?php echo($media->name); ?></td>
+    		<td><?php echo($media->type); ?></td>
+    		<td><?php echo(date('r',strtotime($media->updated_at))); ?></td>
+    		<td><a href="/media-gallery/media-admin/edit/id/<?php echo($media->id); ?>">Edit</a></td>
+    		<td><a href="/media-gallery/media-admin/delete/id/<?php echo($media->id); ?>">Delete</a></td>
+    	</tr>
+    	<?php
+    		$i++;
+    		endforeach;
+        endif;
+    	?>
+    </table>
+</fieldset>

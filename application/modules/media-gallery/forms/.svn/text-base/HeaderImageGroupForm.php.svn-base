@@ -1,0 +1,53 @@
+<?php
+
+class HeaderImageGroupForm extends Zend_Form
+{
+    public function init()
+    {
+        $this->setMethod('post')
+             ->setAttrib('enctype', 'multipart/form-data');
+
+        $group = new Zend_Form_SubForm();
+
+        $group->addElement('hidden', 'id', array(
+            'label'      => '',
+            'required'   => false,
+            'filters'    => array('StringTrim'),
+            'validators' => array(
+                'NotEmpty'
+            )
+        ));
+
+        $group->addElement('select', 'show_on_homepage', array(
+            'label'      => 'Show on homepage?',
+            'multiOptions' => array(0 => 'No', 1 => 'Yes'),
+            'required'   => true,
+            'filters'    => array('StringTrim'),
+            'validators' => array(
+                'NotEmpty'
+            ),
+        ));
+
+		$left = new Zend_Form_Element_File('left_image');
+		$left->setLabel('Upload an image for the left side:')
+		     ->addValidator('Count', false, 1)     // ensure only 1 file
+		     ->addValidator('Size', false, 2048000) // limit to 2MB
+             ->setRequired(true)
+		     ->addValidator('Extension', false, 'jpg,png,gif'); // only JPEG, PNG, and GIFs
+		$group->addElement($left, 'left_image');
+
+		$right = new Zend_Form_Element_File('right_image');
+		$right->setLabel('Upload an image for the right side:')
+		      ->addValidator('Count', false, 1)     // ensure only 1 file
+		      ->addValidator('Size', false, 2048000) // limit to 2MB
+              ->setRequired(true)
+		      ->addValidator('Extension', false, 'jpg,png,gif'); // only JPEG, PNG, and GIFs
+		$group->addElement($right, 'right_image');
+
+        $this->addSubForm($group, 'group');
+
+        $this->addElement('submit', 'save', array(
+            'label' => 'Save'
+        ));
+    }
+}

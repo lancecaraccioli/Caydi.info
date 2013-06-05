@@ -1,0 +1,67 @@
+<?php
+
+class NewsletterForm extends Zend_Form
+{
+	public function init()
+    {
+        $id            = new Zend_Form_Element_Hidden('id');
+        $name	       = new Zend_Form_Element_Text('name');
+        $season        = new Zend_Form_Element_Select('season');
+        $year          = new Zend_Form_Element_Select('year');
+    	$image         = new Zend_Form_Element_File('image');
+        $filename      = new Zend_Form_Element_File('filename');
+        $submit        = new Zend_Form_Element_Submit('submit');
+        $configuration = Zend_Registry::get('configuration');
+
+        $years   = array_reverse(range(date('Y') - 5, date('Y') + 1));
+        $years   = array_combine($years, $years);
+        $seasons = array('', 'Spring', 'Summer', 'Fall', 'Winter');
+        $seasons = array_combine($seasons, $seasons);
+
+        $name->setLabel('Name')
+             ->setDescription('Museum name.')
+             ->setRequired(true);
+
+        $season->setLabel('Season')
+               ->addValidator(new Zend_Validate_Alnum(true))
+               ->setDescription('Season name.')
+               ->setRequired(true)
+               ->addMultiOptions($seasons)
+               ->setIsArray(false)
+               ->setValue('');
+
+        $year->setLabel('Year')
+             ->setDescription('Year.')
+             ->setRequired(true)
+             ->addMultiOptions($years)
+             ->setIsArray(false)
+             ->setValue(date('Y'));
+
+        $image->setLabel('Image')
+		      ->addValidator('Count', false, 1)
+		      ->addValidator('Size', false, 4194304)
+              ->setRequired(true)
+		      ->addValidator('Extension', false, 'gif,jpg,jpeg,png');
+
+        $filename->setLabel('PDF')
+		         ->addValidator('Count', false, 1)
+		         ->addValidator('Size', false, 67108864)
+                 ->setRequired(true)
+		         ->addValidator('Extension', false, 'pdf')
+                 ->setDestination($configuration->files->newsletters->path);
+
+        $submit->setLabel('Save')
+               ->setDescription('Click here to save your changes.');
+
+        $this->setAttrib('enctype', 'multipart/form-data');
+        $this->addElements(array(
+        	$id,
+        	$name,
+            $season,
+        	$year,
+            $image,
+            $filename,
+            $submit
+        ));
+	}
+}

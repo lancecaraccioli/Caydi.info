@@ -1,0 +1,54 @@
+<?php
+
+class ContentForm extends Zend_Form
+{
+    public function init()
+    {
+    	$config=Zend_Registry::get('configuration');
+        // set the method for the display form to POST
+        $this->setMethod('post')->setAttrib('enctype', 'multipart/form-data');
+
+        $ContentForm = new Zend_Form_SubForm();
+
+        $ContentForm->addElement('hidden', 'id', array(
+            'label'      => '',
+            'required'   => false,
+            'filters'    => array('StringTrim'),
+            'validators' => array(
+                'NotEmpty',
+            )
+        ));
+		$auth = Zend_Auth::getInstance();
+    	$acl  = new Custom_Acl_KidZoneAdmin;
+    	$role = $auth->hasIdentity()?$auth->getIdentity():'guest';
+    	$resource = 'content-cms';
+    	$privilege = 'edit-title';//anyone that can remove the content page can edit it's title otherwise 
+	    	
+		if ($acl->isAllowed($role,$resource,$privilege)){
+	        $ContentForm->addElement('text', 'title', array(
+	            'label'      => 'Title:',
+	            'required'   => true,
+	            'filters'    => array('StringTrim'),
+	            'validators' => array(
+	                'NotEmpty',
+	            )
+	        ));
+		}
+
+        $ContentForm->addElement('textarea', 'content', array(
+            'label'      => 'Content:',
+            'required'   => true,
+            'filters'    => array(),
+            'validators' => array(
+                'NotEmpty',
+            )
+        ));
+
+        $this->addSubForm($ContentForm, 'Content');
+
+        // add the submit button
+        $this->addElement('submit', 'save', array(
+            'label'    => 'Save',
+        ));
+    }
+}

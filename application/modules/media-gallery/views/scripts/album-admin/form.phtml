@@ -1,0 +1,64 @@
+<? $this->headLink()->appendStylesheet('/css/uploadify.css');?>
+<? $this->headScript()->appendFile('/js/jquery.uploadify.js');?>
+
+<? if ($this->mediaAlbum->id):?>
+	<? $this->headScript()->captureStart();?>
+		sessionID='<?=session_id();?>';
+		mediaAlbumID=<?=$this->mediaAlbum->id;?>;
+		$(document).ready(function(){
+			$("#multiFileUploader").fileUpload({
+				'uploader': '/swf/uploader.swf',
+				'cancelImg': '/img/button/cancel.png',
+				'buttonImg': '/img/button/browse.gif',
+				'script': "<?=$this->url(array('action'=>'attach-media-from-upload','controller'=>'media-upload', 'format'=>'json'));?>",
+				'scriptData': {'s_ID':sessionID, 'media_album_id':mediaAlbumID},
+				'displayData': 'speed',
+				'wmode':'transparent',
+				'width':'75px',
+				'multi':true,
+				'onSelectOnce':selectHandler,
+				'fileExt':'*.jpg;*.gif;*.png;*.pdf;*.flv;*.wmv;*.mp3;*.doc'
+			});
+		});
+		function selectHandler(event,data){
+			$('#uploadMediaButton').click(function(){
+				$(event.target).fileUploadStart();
+			});
+		}
+	<? $this->headScript()->captureEnd();?>
+<?endif;?>
+
+<h2>Media Album Input Form</h2>
+<a href="/media-gallery/album-admin//list">Return to List</a> | <a href="/media-gallery/media-admin/list/media_album_id/<?=($this->mediaAlbum->id); ?>">Manage Media</a><br />
+<br />
+<?php if ($element_messages = $this->form->getMessages()): ?>
+<fieldset class="errors total-errors">
+    <legend>Errors</legend>
+    <ul>
+    <?php foreach ($element_messages as $key=>$messages) :?>
+        <li>
+            <strong><?php echo $this->form->getElement($key)->getLabel();?></strong>
+            <ul>
+                <?php foreach ($messages as $m_key=>$message) :?>
+                    <li><?php echo $message; ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </li>
+    <?php endforeach; ?>
+    </ul>
+</fieldset>
+<?php endif; ?>
+<fieldset class="form-container">
+<legend>Media Album Information</legend>
+<?= $this->form; ?>
+</fieldset>
+<fieldset class="form-container">
+<legend>Multi File Uploader</legend>
+	<?if($this->mediaAlbum->id):?>
+		<div id="multiFileUploader"></div>
+		<button id="uploadMediaButton">Batch Upload These Files</button>
+	<?else:?>
+		<p>Once your media album is created you may return here to upload multiple media files at once.</p>
+	<?endif;?>
+</fieldset>
+

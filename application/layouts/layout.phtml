@@ -1,0 +1,60 @@
+<?= $this->doctype() ?>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <?= $this->headTitle() ?>
+    <? $this->headScript()
+        ->prependFile('/js/jquery-1.3.2.min.js')
+        ;//notice no echo here... see below
+    ?>
+
+    <?= $this->headLink()
+            ->appendStylesheet('/layout/css/yui-reset-font-grids.css')
+            ->appendStylesheet('/layout/css/yui-base.css')
+            ->appendStylesheet('/layout/css/layout.css')
+            ->appendStylesheet('/layout/css/forms.css')
+            ;
+    ?>
+    <?= $this->headStyle() ?>
+</head>
+<body>
+<div id="body-wrap">
+	<div id="echo-pane"></div>
+	<div id="butterfly-animation"></div>
+    <div class="main-wrap ">
+        <?=$this->render('header.phtml') ?>
+        <div class="navigation-wrap"><?//= $this->render('nav.phtml') ?></div>
+        <div class="content-wrap">
+            <div class="content-document">
+					<div class = "pink wrap">
+						<div class = "green wrap">
+							<div class = "white wrap">
+								<?=$this->placeholder('layout-content');?>
+							</div>
+						</div>
+					</div>
+            </div>
+        </div>
+        <?=$this->render('footer.phtml') ?>
+    </div>
+    <?//based on best practice recommendations from yahoo.  see ?>
+	<? $this->headScript()->captureStart();?>
+		function echo($string){
+			$('#echo-pane').html($string);
+		}
+		var magic = function(){
+			$('html').css({backgroundPosition:"0px 0px"});
+			$('html').animate({backgroundPosition:"826px 0px"}, 60000,'linear',magic);
+		}
+		magic();
+		var butterflyMagic =function(){
+			$('#butterfly-animation').css({left:"100%"});
+			$('#butterfly-animation').animate({left:"1%"}, 60000,'linear', butterflyMagic);
+		}
+		butterflyMagic();
+	<? $this->headScript()->captureEnd();?>
+    <?= $this->headScript();?>
+</div>
+</body>
+</html>

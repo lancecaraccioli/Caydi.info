@@ -1,0 +1,23 @@
+<div id="index-wrapper">
+	<style type="text/css">
+		.wrap{-moz-border-radius:10px;border-radius:10px;-webkit-border-radius:10px;10px;padding:10px;display:inline-block;}
+		.pink{background-color:#FB7A92;}
+		.green{background-color:#A4D426;}
+		.white{background-color:#FFF;width:539px;height:612px;padding:0px;position:relative;}
+		.white img{position:absolute;}
+		.white img.tree{top:0px;left:0px;}
+		.white img.butterfly{top:85px;left:0px;}
+		.white img.ribbon{top:355px;left:-55px;}
+		#index-wrapper{text-align:center;}
+	</style>
+	<div class = "pink wrap">
+		<div class = "green wrap">
+			<div class = "white wrap">
+				<img class="tree" src="/layout/img/pink-tree.png"/>
+				<img class="butterfly" src="/layout/img/butterfly.gif"/>
+				<img class="ribbon" src="/layout/img/ribbon.gif"/>
+				<a href="<?=$this->url(array('action'=>'info'));?>">Open</a>
+			</div>
+		</div>
+	</div>
+</div>

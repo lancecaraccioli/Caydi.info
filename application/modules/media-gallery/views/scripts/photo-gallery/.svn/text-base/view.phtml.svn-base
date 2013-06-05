@@ -1,0 +1,66 @@
+<? $this->headLink()->appendStylesheet('/css/default/photo-gallery.css');?>
+<? $this->headLink()->appendStylesheet('/css/default/tabs.css');?>
+<? $this->headLink()->appendStylesheet('/css/default/jquery.lightbox-0.4.css');?>
+<? $this->headScript()->appendFile('/javascript/jquery/plugins/jquery.lightbox-0.4.min.js');?>
+<? $this->headScript()->captureStart();?>
+	function setupAlbum(album){
+		album.find('a.photoLink').lightBox();
+		album.find('p.paginationControl a').click(function(){
+			album
+				.html('<img class="ajax-loader" src="/images/ajax-loader.gif"/>')
+				.load($(this).attr('href')+'?format=xml', function(){setupAlbum(album)});
+			var URI = document.URL.split('#');
+			window.location = URI[0] + '#' + $(this).attr('href');
+			return false;
+		});
+	}
+	$(document).ready(function(){
+		var URI = document.URL.split('#');
+		$('ul.tabsNav a.tab').click(function(){
+			$('ul.tabsNav li.currentTab').removeClass('currentTab');
+			$(this).parent().addClass('currentTab');
+			$('div.currentAlbum').removeClass('currentAlbum');
+			var album = $('div'+$(this).attr('rel'));
+			album
+				.addClass('currentAlbum')
+				.html('<img class="ajax-loader" src="/images/ajax-loader.gif"/>')
+				.load($(this).attr('href')+'?format=xml', function(){setupAlbum(album)});
+			var URI = document.URL.split('#');
+			window.location = URI[0] + '#' + $(this).attr('href');
+			return false;
+		});
+		if (URI.length > 1 && $('a[href='+URI[1]+']').size() > 0){
+			$('a[href='+URI[1]+']').trigger('click');
+		}
+	});
+<? $this->headScript()->captureEnd();?>
+<? $this->placeholder('title')->set('Photo Gallery');?>
+<? $this->placeholder('content')->captureStart();?>
+<div id="mediaAlbums-wrapper">
+	
+	<?if ($this->mediaAlbums):?>
+		<ul class="tabsNav wrap-floats">
+			<? foreach ($this->mediaAlbums as $mediaAlbum):?>
+				<li class="mediaAlbum-<?=$mediaAlbum->id;?><?if ($mediaAlbum->id == $this->state->currentAlbum):?> currentTab<?endif;?>"><a class="tab" href="/photo-gallery/view/album/<?=$mediaAlbum->id;?>" rel="#photo-list-<?=$mediaAlbum->id;?>"><span><?=$mediaAlbum->name;?></span></a></li>
+			<?endforeach;?>
+		</ul>
+		<div id="photo-gallery-top-cap"></div>
+			<? foreach ($this->mediaAlbums as $mediaAlbum):?>
+				<div id="photo-list-<?=$mediaAlbum->id;?>" class="<?if ($mediaAlbum->id == $this->state->currentAlbum):?>currentAlbum <?endif?>photo-list">
+					<?if ($mediaAlbum->id == $this->state->currentAlbum):?>
+						<?=$this->partial('photo-gallery/partial/album-list.phtml', array('mediaAlbum'=>$mediaAlbum, 'paginator'=>$this->paginator));?>
+						<? $this->headScript()->captureStart();?>
+							$(document).ready(function(){
+								setupAlbum($("#photo-list-<?=$mediaAlbum->id;?>"));
+							});
+						<? $this->headScript()->captureEnd();?>
+					<?endif;?>
+				</div>
+			<?endforeach;?>
+		<div id="photo-gallery-bottom-cap"></div>
+	<? else: ?>
+		<p>No photo albums found.</p>
+	<? endif; ?>
+</div>
+<? $this->placeholder('content')->captureEnd();?>
+<?= $this->render('_decorator/two-column.phtml');?>

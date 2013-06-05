@@ -1,0 +1,90 @@
+<?php
+class EventForm extends Zend_Form
+{
+	public function init() {
+
+        $id 			= new Zend_Form_Element_Hidden('id');
+        $title	        = new Zend_Form_Element_Text('title');
+        $categories  	= new Zend_Form_Element_Multiselect('categories');
+    	$image			= new Zend_Form_Element_File('image');
+    	$current_image  = new Custom_Form_Element_RawHtml('current_image');
+    	$image_caption  = new Zend_Form_Element_Textarea('image_caption');
+        $location	    = new Zend_Form_Element_Text('location');
+        $starts	        = new Custom_Form_Element_Date('starts');
+        $ends	        = new Custom_Form_Element_Date('ends');
+        $location       = new Zend_Form_Element_Text('location');
+        $members_only   = new Zend_Form_Element_Checkbox('members_only');
+    	$description	= new Zend_Form_Element_Textarea('description');
+
+        $submit         = new Zend_Form_Element_Submit('submit');
+        
+        $eventCategories = Doctrine_Query::create()->select('ec.id, ec.name')->from('EventCategory ec')->execute();
+        $eventCategoryOptions=array();
+        foreach($eventCategories as $eventCategory){
+        		$eventCategoryOptions[$eventCategory->id] = $eventCategory->name;
+        }
+        
+        $categories
+        	->setLabel('Select all categories this event will be associated with.  Hold down the "Ctrl" key to select multiple categories at the same time.')
+        	->setMultiOptions($eventCategoryOptions)
+        ;
+        
+        
+        $image->setLabel('Upload an Event Image')
+			->addValidator('Extension', false, 'jpg,png,gif')
+	        ->addValidator('Size', false, 1638400)
+	        ->addValidator('Count', false, 1)
+            ->setDestination(USER_MEDIA_PATH. 'events/original')
+            ->setDescription('Image associated with this event.')
+            ->setRequired(false);
+            
+    	$current_image->setLabel('Current Image:');
+    	
+        $image_caption->setLabel('Image Caption:');
+        
+        $title->setLabel('Title')
+            ->addValidator(new Zend_Validate_Alnum(true))
+            ->setDescription('Event Title.')
+            ->setRequired(true);
+                
+        $location->setLabel('Location')
+            ->addValidator(new Zend_Validate_Alnum(true))
+            ->setDescription('Event Location.')
+            ->setRequired(true);
+            
+        $members_only->setLabel('Members Only')
+        	->setOptions(array('checkedValue'=>1, 'uncheckedValue'=>0))
+            ->addValidator(new Zend_Validate_Alnum(true))
+            ->setDescription('Check this for members only events.')
+            ->setRequired(true);
+                
+        $starts
+        	->setLabel('Start Date and Time (YYYY-MM-DD)')
+        	->setRequired(true);
+        $ends
+        	->setLabel('End Date and Time (YYYY-MM-DD)')
+        	->setRequired(true);
+
+        $description->setLabel('Description')
+                    ->setDescription('Description of Event.')
+                    ->setRequired(true);
+                    
+        $submit->setLabel('Save')
+                ->setDescription('Click here to save your changes.');
+
+		$this->setAttrib('enctype', 'multipart/form-data');
+        $this->addElements(array(
+        	$id,
+        	$title,
+        	$categories,
+        	$image,
+        	$current_image,
+        	$image_caption,
+        	$location,
+        	$starts,
+        	$ends,
+        	$description,
+            $submit,
+        ));
+	}
+}

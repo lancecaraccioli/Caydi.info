@@ -1,0 +1,15 @@
+People Coming To Caydi's Party
+Name, Email, # of people
+<?foreach($this->rsvps as $rsvp):?>
+<?=$rsvp->firstname;?> <?=$rsvp->firstname;?>, <?=$rsvp->email;?>, <?=$rsvp->number_of_people;?>
+<?endforeach;?>
+<?
+				$total=0;
+				foreach($this->rsvps as $rsvp){
+					$total+=$rsvp->number_of_people;
+				}
+				
+			?>
+TOTAL Number of people <?=$total;?>
+
+

@@ -1,0 +1,47 @@
+<?php
+class FaqForm extends Zend_Form
+{
+	public function init() {
+		$this->setAttrib('enctype', 'multipart/form-data');
+		$this->setMethod('post');
+		$this->addElement('hidden','id');
+        $faqCategorys=Doctrine::getTable('FaqCategory')->findAll();
+        $faqCategoryOptions=array(''=>"choose a category");
+        foreach($faqCategorys as $key=>$faqCategory){
+            $faqCategoryOptions[$faqCategory->id]=$faqCategory->name;
+        }
+		$this->addElement('select','faq_category_id')
+            ->getElement('faq_category_id')
+            ->addMultiOptions($faqCategoryOptions)
+            ->setIsArray(false)
+            ->setValue('')
+            ->setRequired(true)
+            ->setLabel('FAQ Category:');
+		$this->addElement('textarea','question',array('label' => 'Question:','required' => true));
+		$this->addElement('textarea','answer',array('label' => 'Answer:','required' => true));
+        $this->addElement('submit','submit',array('label' => 'Send'));
+        //view logic (place in view script?)
+        $this->setDisableLoadDefaultDecorators(true);
+		$this->addDecorator('FormElements')
+			 ->addDecorator('HtmlTag', array('tag' => 'ul')) //this adds a <ul> inside the <form>
+			 ->addDecorator('Form');
+		$this->setElementDecorators(array(
+			'ViewHelper',
+			array('Label',array('requiredSuffix' => '<span class="form-required">*</span>', 'escape' => false)),
+			'Errors',
+			new Zend_Form_Decorator_HtmlTag(array('tag' => 'li')) //wrap elements in <li>'s
+		));
+        $this->submit->removeDecorator('HtmlTag');
+        $this->submit->addDecorator(array('div'=>'HtmlTag'), array('tag'=>'div', 'class'=>'button-wrapper'));
+        $this->submit->addDecorator(array('li'=>'HtmlTag'), array('tag'=>'li'));
+		$this->submit->removeDecorator('Label');
+ 
+		//Set decorators for the displaygroup:
+		$this->setDisplayGroupDecorators(array(
+			'FormElements',
+			array(array('ul'=>'HtmlTag'),array('tag'=>'ul')),
+			'Fieldset',
+			array(array('li'=>'HtmlTag'),array('tag'=>'li')),
+		));
+	}
+}

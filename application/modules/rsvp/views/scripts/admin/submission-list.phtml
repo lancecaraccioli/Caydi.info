@@ -1,0 +1,31 @@
+<? $this->placeholder('title')->set('Rsvp Submissions'); ?>
+
+
+    <h2><?= $this->placeholder('title') ?></h2>
+    <table>
+		<tr>
+			<th><a href="<?= $this->url(array('orderby'=>'first_name')); ?>">First Name</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'last_name')); ?>">Last Name</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'number_of_people')); ?>"># of People</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'email')); ?>">Email</a></th>
+			<th><a href="<?= $this->url(array('orderby'=>'created_at')); ?>">Creation Date</a></th>
+			
+
+		</tr>
+	<?$totalPeople=0;?>
+    <? foreach($this->rsvps as $rsvp): ?>
+	    <tr>
+	        <td><?= $rsvp->first_name; ?></td>
+	        <td><?= $rsvp->last_name; ?></td>
+	        <td><?= $rsvp->number_of_people; ?></td>
+			<?$totalPeople+=$rsvp->number_of_people;?>
+	        <td><a href="mailto:<?= $rsvp->email; ?>"><?= $rsvp->email; ?></a></td>
+	        <td><?= date('M d, Y',strtotime($rsvp->created_at)); ?></td>
+	    </tr>
+		<tr>
+			<td colspan="5"><?= $rsvp->comments; ?></td>
+		</tr>
+    <? endforeach ?>
+    </table>
+	<strong>TOTAL PEOPLE: <?=$totalPeople;?></strong>
+

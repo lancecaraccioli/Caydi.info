@@ -1,0 +1,101 @@
+<? $this->headLink()->appendStylesheet('/css/jquery.lightbox-0.4.css');?>
+<? $this->headLink()->appendStylesheet('/css/photo-gallery.css');?>
+<? $this->headScript()->appendFile('/js/jquery.lightbox-0.4.min.js');?>
+<? $this->headScript()->captureStart();?>
+    var preloadedImages = [];
+    function preloadLargeImage(i){
+        var id = $(this).attr('id');
+        if (!preloadedImages[id]){
+            preloadedImages[id] = new Image();
+            $(preloadedImages[id]).load(function(){
+                $(this).data('loaded',true);
+            });
+            preloadedImages[id].src = $(this).attr('href');
+        }
+    }
+    function presentLargeImage(event){
+        $('#loading-image-pane').slideDown();
+        viewPane = $('#large-image-view-pane');
+        viewPane.addClass('loading');
+        var id = $(this).attr('id');
+        //assume it's not loaded already and add a load event handler
+        $(preloadedImages[id]).load(function(){
+            $('#loading-image-pane').slideUp(); 
+        });
+        //if the image finished loading before the even handler was bound or was already loaded then data "loaded" will be true
+        //therefore unbind the load and slideUp the loader immediately
+        if ($(preloadedImages[id]).data('loaded')){
+            $(preloadedImages[id]).unbind('load');
+            $('#loading-image-pane').slideUp();
+        }
+        viewPane.html(preloadedImages[id]);
+        if (viewPane.css('display') == 'none'){
+            viewPane.show('slow');
+        }
+        return false;
+    }
+	function setupAlbum(album){
+		album.find('a.photoLink')
+		    .click(presentLargeImage)
+		    .each(preloadLargeImage);
+		album.find('p.paginationControl a').click(function(){
+		    $('#loading-image-pane').slideDown();
+			album.load($(this).attr('href')+'?format=xml', function(){setupAlbum(album)});
+			var URI = document.URL.split('#');
+			window.location = URI[0] + '#' + $(this).attr('href');
+			return false;
+		});
+		$('#loading-image-pane').slideUp();
+	}
+	$(document).ready(function(){
+		var URI = document.URL.split('#');
+		$('ul.albumNav a.tab').click(function(){
+			$('ul.albumNav li.currentTab').removeClass('currentTab');
+			$(this).parent().addClass('currentTab');
+			$('div.currentAlbum').removeClass('currentAlbum');
+			var album = $('div'+$(this).attr('rel'));
+			$('#loading-image-pane').slideDown();
+			album
+				.addClass('currentAlbum')
+				.load($(this).attr('href')+'?format=xml', function(){setupAlbum(album)});
+			var URI = document.URL.split('#');
+			window.location = URI[0] + '#' + $(this).attr('href');
+			return false;
+		});
+		if (URI.length > 1 && $('a[href='+URI[1]+']').size() > 0){
+			$('a[href='+URI[1]+']').trigger('click');
+		}
+	});
+<? $this->headScript()->captureEnd();?>
+<? $this->placeholder('title')->set('Photo Gallery');?>
+
+<div id="albums-wrapper">
+	
+	<?if ($this->albums):?>
+	    <?$this->placeholder('left-column-content')->captureStart();?>
+		    <ul class="albumNav">
+			    <? foreach ($this->albums as $album):?>
+				    <li class="album-<?=$album->id;?><?if ($album->id == $this->state->currentAlbum):?> currentTab<?endif;?>"><a class="tab" href="/media-gallery/photo-gallery/view/album/<?=$album->id;?>" rel="#photo-list-<?=$album->id;?>"><span><?=$album->name;?></span></a></li>
+			    <?endforeach;?>
+		    </ul>
+		<?$this->placeholder('left-column-content')->captureEnd();?>
+		<div id="loading-image-pane"><img class="ajax-loader" src="/layout/img/ajax-loader-wide-yellow.gif"/></div>
+		<div id="large-image-view-pane"></div>
+		<? foreach ($this->albums as $album):?>
+			<div id="photo-list-<?=$album->id;?>" class="<?if ($album->id == $this->state->currentAlbum):?>currentAlbum <?endif?>photo-list">
+				<?if ($album->id == $this->state->currentAlbum):?>
+					<?=$this->partial('photo-gallery/partial/album-list.phtml', array('album'=>$album, 'paginator'=>$this->paginator));?>
+					<? $this->headScript()->captureStart();?>
+						$(document).ready(function(){
+							setupAlbum($("#photo-list-<?=$album->id;?>"));
+						});
+					<? $this->headScript()->captureEnd();?>
+				<?endif;?>
+			</div>
+		<?endforeach;?>
+	<? else: ?>
+		<p>No photo albums found.</p>
+	<? endif; ?>
+</div>
+
+

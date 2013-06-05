@@ -1,0 +1,30 @@
+<h2>Media Albums</h2>
+<a href="/media-gallery/album-admin/create">Add Another Media Album</a><br />
+<br />
+<table align="center">
+	<tr>
+		<th>Cover Image</th>
+		<th>Name</th>
+		<th>Description</th>
+		<th>Submission Date</th>
+		<th colspan="3">Actions</th>
+	</tr>
+	<?php
+		$i=0;
+		$classes=array('dark','light');
+		foreach ($this->media_albums as $media_album):
+	?>
+	<tr class="<?=($classes[$i%2]);?>">
+		<td><img src="<?=($media_album->CoverPhoto->thumbnail_file); ?>"/></td>
+		<td><?=($media_album->name); ?></td>
+		<td><?=($media_album->description); ?></td>
+		<td><?=(date('r',strtotime($media_album->created_at))); ?></td>
+		<td><a href="/media-gallery/album-admin/edit/id/<?=($media_album->id); ?>">Edit</a></td>
+		<td><a href="/media-gallery/album-admin/delete/id/<?=($media_album->id); ?>">Delete</a></td>
+		<td><a href="/media-gallery/media-admin/list/media_album_id/<?=($media_album->id); ?>">Manage Media</a></td>
+	</tr>
+	<?php
+		$i++;
+		endforeach;
+	?>
+</table>

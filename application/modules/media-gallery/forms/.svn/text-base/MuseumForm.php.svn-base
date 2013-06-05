@@ -1,0 +1,104 @@
+<?php
+class MuseumForm extends Zend_Form
+{
+	public function init()
+    {
+        $id           = new Zend_Form_Element_Hidden('id');
+        $name	      = new Zend_Form_Element_Text('name');
+    	$description  = new Zend_Form_Element_Textarea('description');
+    	$image			= new Zend_Form_Element_File('image');
+    	$current_image = new Custom_Form_Element_RawHtml('current_image');
+        $contact_first_name = new Zend_Form_Element_Text('contact_first_name');
+        $contact_last_name  = new Zend_Form_Element_Text('contact_last_name');
+        $address      = new Zend_Form_Element_Text('address');
+        $city         = new Zend_Form_Element_Text('city');
+        $state        = new Custom_Form_Element_USAState('state');
+        $zip          = new Zend_Form_Element_Text('zip');
+        $phone        = new Custom_Form_Element_Phone('phone');
+        $fax          = new Custom_Form_Element_Phone('fax');
+        $website      = new Zend_Form_Element_Text('website');
+        $regionSelect = new Zend_Form_Element_Select('region_id');
+        $submit       = new Zend_Form_Element_Submit('submit');
+
+        $regions = Doctrine_Query::create()
+                       ->from('Region')
+                       ->execute();
+
+        $regionOptions = array('' => 'Choose a region...');
+
+        foreach ($regions as $region){
+            $regionOptions[$region->id] = $region->name;
+        }
+
+        $regionSelect->addMultiOptions($regionOptions)
+                     ->setIsArray(false)
+                     ->setValue('')
+                     ->setRequired(true)
+                     ->setLabel('Region');
+
+        $name->setLabel('Name')
+             ->addValidator(new Zend_Validate_Alnum(true))
+             ->setDescription('Museum name.')
+             ->setRequired(true);
+
+        $description->setLabel('Description')
+                    ->setDescription('Description of Museum.')
+                    ->setRequired(true);
+                    
+		$image->setLabel('Upload An Image')
+			->addValidator('Extension', false, 'jpg,png,gif')
+	        ->addValidator('Size', false, 1638400)
+	        ->addValidator('Count', false, 1)
+            ->setDestination(USER_MEDIA_PATH. 'museums/original')
+            ->setDescription('Image associated with this museum.')
+            ->setRequired(false);
+            
+    	$current_image->setLabel('Current Image:');
+            
+
+        $contact_first_name->setLabel('Contact First Name')
+                           ->addValidator(new Zend_Validate_Alnum(true));
+
+        $contact_last_name->setLabel('Contact Last Name')
+                          ->addValidator(new Zend_Validate_Alnum(true));
+
+        $address->setLabel('Address');
+
+        $city->setLabel('City')
+             ->addValidator(new Zend_Validate_Alnum(true));
+
+        $state->setLabel('State');
+
+        $zip->setLabel('Zip Code');
+
+        $phone->setLabel('Phone Number');
+
+        $fax->setLabel('Fax Number');
+
+        $website->setLabel('Website');
+
+        $submit->setLabel('Save')
+               ->setDescription('Click here to save your changes.');
+               
+		$this->setAttrib('enctype', 'multipart/form-data');
+        $this->addElements(array(
+        	$id,
+        	$regionSelect,
+        	$image,
+        	$current_image,
+        	$name,
+        	$description,
+            $contact_first_name,
+            $contact_last_name,
+            $address,
+            $city,
+            $state,
+            $zip,
+            $phone,
+            $fax,
+            $website,
+            $regionSelect,
+            $submit
+        ));
+	}
+}

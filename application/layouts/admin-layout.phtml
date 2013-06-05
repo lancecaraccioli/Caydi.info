@@ -1,0 +1,9 @@
+<?$this->placeholder('left-column-content')->captureStart();?>
+    <ul>
+		<li><a href="/rsvp/admin">Who's Coming?</a></li>
+	</ul>
+<?$this->placeholder('left-column-content')->captureEnd();?>
+<?$this->placeholder('right-column-content')->captureStart();?>
+    <?= $this->layout()->content; ?>
+<?$this->placeholder('right-column-content')->captureEnd();?>
+<?=$this->render('two-column-layout.phtml');?>

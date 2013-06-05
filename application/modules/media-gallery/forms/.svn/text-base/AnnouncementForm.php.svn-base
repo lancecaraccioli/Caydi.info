@@ -1,0 +1,78 @@
+<?php
+
+class AnnouncementForm extends Zend_Form
+{
+	public function init()
+    {
+        $id            = new Zend_Form_Element_Hidden('id');
+        $regionSelect  = new Zend_Form_Element_Select('region_id');
+        $name	       = new Zend_Form_Element_Text('name');
+        $author        = new Zend_Form_Element_Text('author');
+    	$description   = new Zend_Form_Element_Textarea('description');
+    	$image         = new Zend_Form_Element_File('image');
+        $filename      = new Zend_Form_Element_File('filename');
+        $released      = new Custom_Form_Element_Date('released');
+        $submit        = new Zend_Form_Element_Submit('submit');
+        $configuration = Zend_Registry::get('configuration');
+
+        $regions = array('' => 'Choose a region...');
+        $results = Doctrine_Query::create()
+                       ->from('Region')
+                       ->execute();
+
+        foreach ($results as $region) {
+            $regions[$region->id] = $region->name;
+        }
+
+        $regionSelect->addMultiOptions($regions)
+                     ->setIsArray(false)
+                     ->setValue('')
+                     ->setRequired(true)
+                     ->setLabel('Region');
+
+        $name->setLabel('Name')
+             ->addValidator(new Zend_Validate_Alnum(true))
+             ->setDescription('Museum name.')
+             ->setRequired(true);
+
+        $author->setLabel('Author')
+             ->addValidator(new Zend_Validate_Alnum(true))
+             ->setDescription('Author name.')
+             ->setRequired(true);
+
+        $description->setLabel('Description')
+                    ->setDescription('Description of Museum.')
+                    ->setRequired(true);
+
+        $image->setLabel('Image')
+		      ->addValidator('Count', false, 1)
+		      ->addValidator('Size', false, 4194304)
+              ->setRequired(true)
+		      ->addValidator('Extension', false, 'gif,jpg,jpeg,png');
+
+        $filename->setLabel('PDF')
+		         ->addValidator('Count', false, 1)
+		         ->addValidator('Size', false, 67108864)
+                 ->setRequired(true)
+		         ->addValidator('Extension', false, 'pdf')
+                 ->setDestination($configuration->files->announcements->path);
+
+        $released->setLabel('Release Date:');
+
+        $submit->setLabel('Save')
+               ->setDescription('Click here to save your changes.');
+
+        $this->setAttrib('enctype', 'multipart/form-data');
+        $this->addElements(array(
+        	$id,
+        	$regionSelect,
+        	$name,
+            $author,
+        	$description,
+            $image,
+            $filename,
+            $released,
+            $submit
+        ));
+	}
+}

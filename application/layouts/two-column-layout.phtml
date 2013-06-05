@@ -1,0 +1,11 @@
+<?$this->placeholder('layout-content')->captureStart();?>
+    <div class="two-column">
+        <div class="left-column">
+            <?=$this->placeholder('left-column-content');?>
+        </div>
+        <div class="right-column">
+            <?=$this->placeholder('right-column-content');?>
+        </div>
+    </div>
+<?$this->placeholder('layout-content')->captureEnd();?>
+<?=$this->render('layout.phtml');?>
